@@ -26,6 +26,10 @@ const instance = new Razorpay({
     key_secret: process.env.RAZORPAY_APT_SECRET ,
 });
 
+app.get('/',(req,res)=>{
+  res.status(200).json("Hello There !")
+})
+
 // app.get('/getKey',(req,res)=>{
 //     try{
             // res.json({key:"rzp_test_XpNRA8Qw0nU8TX"}) // WE DID IT IN FRONTEND

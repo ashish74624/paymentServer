@@ -52,7 +52,7 @@ app.post('/checkout', async (req,res)=>{
     }
 })
 
-app.post('/paymentVerification/:id',async(req,res)=>{
+app.post('/paymentVerification/:email/:id',async(req,res)=>{
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
   const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -68,6 +68,7 @@ app.post('/paymentVerification/:id',async(req,res)=>{
     // Database comes here
 
     await Payment.create({
+      email:req.params.email,
       productId:req.params.id,
       razorpay_order_id:razorpay_order_id,
       razorpay_payment_id:razorpay_payment_id,
@@ -76,6 +77,45 @@ app.post('/paymentVerification/:id',async(req,res)=>{
 
     res.redirect(
       `${process.env.FRONTEND}/payment?reference=${razorpay_payment_id}`
+    );
+  } else {
+    res.status(400).json({
+      done: false,
+    });
+  }
+})
+
+app.post('/payment/:email/:list',async(req,res)=>{
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+  const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_APT_SECRET)
+    .update(body.toString())
+    .digest("hex");
+
+  const isAuthentic = expectedSignature === razorpay_signature;
+
+  if (isAuthentic) {
+    // Database comes here
+    const list1 = req.params.list
+    const a = list1.split(",")
+    const list = a.map(str=>Number(str))
+    console.log(list)
+    list.map(async(elem)=>{
+      await Payment.create({
+        email:req.params.email,
+        productId:elem,
+        razorpay_order_id:razorpay_order_id,
+        razorpay_payment_id:razorpay_payment_id,
+        razorpay_signature:razorpay_signature,
+      });
+    })
+    
+
+    res.redirect(
+      `${process.env.FRONTEND}/cartpayment?reference=${razorpay_payment_id}`
     );
   } else {
     res.status(400).json({

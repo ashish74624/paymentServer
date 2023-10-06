@@ -40,8 +40,9 @@ app.get('/',(req,res)=>{
 
 app.post('/checkout', async (req,res)=>{
     try{
+      const conversionRate=83
         const options = {
-            amount: Number(req.body.amount * 100 *83),
+            amount: Number(req.body.amount * 100 * conversionRate),
             currency: "INR",
           };
           const order = await instance.orders.create(options);

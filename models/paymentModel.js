@@ -9,6 +9,16 @@ const paymentSchema = new mongoose.Schema({
     type:Number,
     required: true,
   },
+  quantity:{
+    type:Number,
+    default:1,
+    validate:{
+      validator: function(value){
+        return value>=1
+      },
+      message:"Quantity can't be less than 1"
+    }
+  },
   razorpay_order_id: {
     type: String,
     required: true,

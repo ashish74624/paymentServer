@@ -101,13 +101,20 @@ app.post('/payment/:email/:list',async(req,res)=>{
   if (isAuthentic) {
     // Database comes here
     const list1 = req.params.list
+    console.log(list1)
     const a = list1.split(",")
-    const list = a.map(str=>Number(str))
-    console.log(list)
-    list.map(async(elem)=>{
+    console.log(a)
+    // const quantities = a.filter((item)=>{return item.slice(0,1)})
+    // const ids = a.filter((item)=>{return item.slice(0,1)})
+    // console.log(ids)
+    // console.log(quantities)
+    // const list = a.map(str=>Number(str))
+    // console.log(list)
+    a.map(async(elem)=>{
       await Payment.create({
         email:req.params.email,
-        productId:elem,
+        productId:Number(elem.slice(0,1)),
+        quantity:Number(elem.slice(2,3)),
         razorpay_order_id:razorpay_order_id,
         razorpay_payment_id:razorpay_payment_id,
         razorpay_signature:razorpay_signature,

@@ -67,10 +67,14 @@ app.post('/paymentVerification/:email/:id',async(req,res)=>{
 
   if (isAuthentic) {
     // Database comes here
-
+    const res = await fetch(`https://fakestoreapi.com/products/${req.params.id}`)
+    const data = await res.json();
     await Payment.create({
       email:req.params.email,
       productId:req.params.id,
+      quantity:1,
+      image:data?.image,
+      title:data?.title,
       razorpay_order_id:razorpay_order_id,
       razorpay_payment_id:razorpay_payment_id,
       razorpay_signature:razorpay_signature,
@@ -111,10 +115,14 @@ app.post('/payment/:email/:list',async(req,res)=>{
     // const list = a.map(str=>Number(str))
     // console.log(list)
     a.map(async(elem)=>{
+      const res = await fetch(`https://fakestoreapi.com/products/${elem.slice(0,1)}`);
+      const data = await res.json();
       await Payment.create({
         email:req.params.email,
         productId:Number(elem.slice(0,1)),
         quantity:Number(elem.slice(2,3)),
+        image:data?.image,
+        title:data?.title,
         razorpay_order_id:razorpay_order_id,
         razorpay_payment_id:razorpay_payment_id,
         razorpay_signature:razorpay_signature,
